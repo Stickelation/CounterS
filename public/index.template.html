@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CounterS</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <section id="inventory" aria-labelledby="inputs-heading">
+    <div class="section-heading">
+      <h1 id="inputs-heading">Inputs</h1>
+      <span id="price-label" class="price-label">USD</span>
+    </div>
+    <details id="csfloat-setup" class="setup">
+      <summary>1. Capture floats with CSFloat</summary>
+      <ol>
+        <li>In Chrome or Edge, show the bookmarks bar: <b>Ctrl+Shift+B</b> on Windows/Linux or <b>Cmd+Shift+B</b> on Mac.</li>
+        <li>Save this link as a bookmark by dragging it onto that bar: <a id="csfloat-bookmark" class="secondary" draggable="true">Export to CounterS</a>.</li>
+        <li>Open your Steam CS2 inventory with CSFloat enabled. Click the <b>saved bookmark on the bookmarks bar</b>, then browse all inventory pages. Run it on Steam, not on this page.</li>
+        <li>Click <b>Download CounterS inventory</b> in the capture panel, then import the file below.</li>
+      </ol>
+      <p>Loaded primary inventory only. Protected items and missing floats are excluded.</p>
+      <div class="actions">
+        <button id="copy-bookmark" class="secondary" disabled>Copy bookmark address</button>
+        <button id="exporter-code" class="secondary">Show bookmark address</button>
+      </div>
+      <p>If dragging does not work, copy the address, create a bookmark named <b>Export to CounterS</b> in your browser's bookmarks manager, and paste it into the bookmark's <b>URL</b> field—not the browser address bar.</p>
+      <textarea id="exporter-code-text" hidden readonly aria-label="Exporter bookmark URL"></textarea>
+      <p id="exporter-status" role="status"></p>
+    </details>
+    <div class="actions workflow">
+      <label class="secondary file">2. Import inventory<input type="file" id="import" accept="application/json,.json"></label>
+      <button id="refresh-prices" class="secondary">3. Refresh Steam prices</button>
+      <label class="float-rule">Float rule
+        <select id="float-rule"><option value="normalized">Normalized</option><option value="legacy">Raw average (legacy)</option></select>
+      </label>
+      <button id="analyze" class="primary">4. Calculate ROI</button>
+    </div>
+    <div class="actions secondary-actions">
+      <button id="export" class="secondary">Export inventory</button>
+      <button id="demo" class="secondary">Load demo</button>
+      <button id="clear" class="secondary">Clear inventory</button>
+    </div>
+    <details class="setup optional-input">
+      <summary>Fetch public inventory without floats</summary>
+      <div class="actions">
+        <input id="steam-id" placeholder="17-digit SteamID64" aria-label="SteamID64">
+        <button id="connect" class="secondary">Download Steam inventory</button>
+      </div>
+    </details>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <div class="input-summary">
+      <span>Items <strong id="count">0</strong></span>
+      <span id="eligible">0 floats · 0 priced</span>
+      <span>Input value <strong id="value">—</strong></span>
+      <input id="filter" type="search" placeholder="Search inputs" aria-label="Search inputs">
+    </div>
+    <div id="inventory-grid" class="table-wrap"></div>
+  </section>
+  <section id="overview" aria-labelledby="outputs-heading">
+    <div class="section-heading"><h2 id="outputs-heading">Outputs</h2></div>
+    <div class="output-summary">
+      <span>Best gross ROI <strong id="roi">—</strong></span>
+      <span>Contracts checked <strong id="checked">—</strong></span>
+      <span id="search-label">10-item contracts</span>
+    </div>
+    <div id="results"></div>
+    <div id="details"></div>
+  </section>
+</main>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

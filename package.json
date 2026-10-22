@@ -1,0 +1,15 @@
+{
+  "name": "counters",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --use-env-proxy server.js",
+    "dev": "node --use-env-proxy --watch server.js",
+    "test": "node --test",
+    "build": "node scripts/build-standalone.js"
+  },
+  "engines": {
+    "node": ">=24.5"
+  }
+}

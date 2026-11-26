@@ -15,7 +15,7 @@ test('StatTrak and Souvenir variants are preserved and zero is a valid float',()
  assert.equal(importSteamFloats(data([{...item,market_hash_name:'Souvenir '+item.market_hash_name}]),catalog).inventory[0].souvenir,true);
 });
 test('missing, malformed, and unsupported values are reported separately',()=>{
- const r=importSteamFloats(data([item,{...item,assetId:'2',float:null},{...item,assetId:'3',float:'0.43'},{...item,assetId:'4',market_hash_name:'Sticker | Example'}]),catalog);
+ const r=importSteamFloats(data([item,{...item,assetId:'2',float:null},{...item,assetId:'3',float:'0.43'},{market_hash_name:'Sticker | Example'}]),catalog);
  assert.equal(r.report.imported,1);assert.equal(r.report.missingFloat,1);assert.equal(r.report.invalidFloat,1);assert.equal(r.report.unsupported,1);
 });
 test('empty captures and duplicate assets cannot replace a usable workspace',()=>{

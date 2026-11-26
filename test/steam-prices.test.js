@@ -24,8 +24,53 @@ test('provider pins CS2 / USD and encodes names, deduplicates requests, and refr
 test('rate limits apply a cooldown and failures never become cached quotes',async()=>{
  let calls=0,time=100000;
  const get=createLowestListingProvider({interval:0,now:()=>time,fetchImpl:async()=>{calls++;return {ok:false,status:429};}});
- await assert.rejects(get('A'),e=>e.status===429);await assert.rejects(get('B'),e=>e.status===429);assert.equal(calls,1);
- time+=60001;await assert.rejects(get('A'),e=>e.status===429);assert.equal(calls,2);
+ await assert.rejects(get('A'),e=>e.status===429&&e.retryAfter===120);
+ time+=119_000;await assert.rejects(get('B'),e=>e.status===429&&e.retryAfter===1);assert.equal(calls,1);
+ time+=1_000;await assert.rejects(get('A'),e=>e.status===429);assert.equal(calls,2);
+});
+test('Steam Retry-After seconds and HTTP dates delay uncached requests while cached prices stay available',async()=>{
+ const start=Date.parse('2026-10-21T12:00:00Z');
+ for(const retryAfter of ['180',new Date(start+180_000).toUTCString()]){
+  let time=start,calls=0;
+  const ok=()=>Response.json({success:true,lowest_price:'$2.00'});
+  const get=createLowestListingProvider({interval:0,now:()=>time,fetchImpl:async()=>{
+   calls++;return calls===2?new Response(null,{status:429,headers:{'Retry-After':retryAfter}}):ok();
+  }});
+  const cached=await get('A');
+  await assert.rejects(get('B'),e=>e.status===429&&e.retryAfter===180);
+  assert.equal(await get('A'),cached);
+  time+=179_000;await assert.rejects(get('B'),e=>e.status===429&&e.retryAfter===1);assert.equal(calls,2);
+  time+=1_000;assert.equal((await get('B')).price,2);assert.equal(calls,3);
+ }
+});
+test('uncached requests start four seconds apart and slow down after rate limits',async()=>{
+ let time=0;
+ const calls=[];
+ const get=createLowestListingProvider({
+  now:()=>time,
+  sleep:async ms=>{time+=ms;},
+  fetchImpl:async()=>{
+   calls.push(time);
+   return [3,6].includes(calls.length)?new Response(null,{status:429}):Response.json({success:true,lowest_price:'$2.00'});
+  },
+ });
+ await get('A');await get('B');
+ await assert.rejects(get('C'),e=>e.retryAfter===120);
+ time+=120_000;
+ await get('D');await get('E');
+ await assert.rejects(get('F'),e=>e.retryAfter===120);
+ time+=120_000;
+ await get('G');await get('H');
+ assert.deepEqual(calls,[0,4000,8000,128000,134000,140000,260000,269000]);
+});
+test('unavailable listings are remembered briefly without becoming prices',async()=>{
+ let time=100000,calls=0;
+ const get=createLowestListingProvider({interval:0,now:()=>time,fetchImpl:async()=>{
+  calls++;return Response.json({success:true});
+ }});
+ await assert.rejects(get('A'),e=>e.status===404);
+ await assert.rejects(get('A'),e=>e.status===404);assert.equal(calls,1);
+ time+=300001;await assert.rejects(get('A'),e=>e.status===404);assert.equal(calls,2);
 });
 test('network, HTTP, and malformed responses give explicit errors without prices',async()=>{
  for(const fetchImpl of [async()=>{throw Error('blocked');},async()=>({ok:false,status:403}),async()=>({ok:true,json:async()=>{throw Error('invalid');}})]){

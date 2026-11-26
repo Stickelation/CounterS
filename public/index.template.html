@@ -13,46 +13,60 @@
       <h1 id="inputs-heading">Inputs</h1>
       <span id="price-label" class="price-label">USD</span>
     </div>
-    <details id="csfloat-setup" class="setup">
-      <summary>1. Capture floats with CSFloat</summary>
+    <div id="steam-actions" class="actions">
+      <button id="steam-sign-in" class="steam-sign-in" type="button" aria-label="Sign in with Steam" disabled>
+        <img id="steam-badge" width="114" height="43" alt="" hidden>
+        <span id="steam-sign-in-label">Sign in with Steam</span>
+      </button>
+      <button id="steam-reload" class="secondary" hidden>Reload Steam inventory</button>
+    </div>
+    <p id="steam-help">Load your public CS2 inventory and available exact floats, replacing the current workspace.</p>
+    <div id="steam-review" class="notice" hidden>
+      <p id="steam-review-summary" role="status"></p>
+      <div class="actions">
+        <button id="steam-accept" class="primary">Replace current inventory</button>
+        <button id="steam-cancel" class="secondary">Cancel</button>
+      </div>
+    </div>
+    <details id="csfloat-setup" class="setup optional-input">
+      <summary>Capture private inventory or missing floats</summary>
       <ol>
         <li>In Chrome or Edge, show the bookmarks bar: <b>Ctrl+Shift+B</b> on Windows/Linux or <b>Cmd+Shift+B</b> on Mac.</li>
-        <li>Save this link as a bookmark by dragging it onto that bar: <a id="csfloat-bookmark" class="secondary" draggable="true">Export to CounterS</a>.</li>
-        <li>Open your Steam CS2 inventory with CSFloat enabled. Click the <b>saved bookmark on the bookmarks bar</b>, then browse all inventory pages. Run it on Steam, not on this page.</li>
-        <li>Click <b>Download CounterS inventory</b> in the capture panel, then import the file below.</li>
+        <li>Drag <a id="csfloat-bookmark" class="secondary" draggable="true">Capture for CounterS</a> to your bookmarks bar.</li>
+        <li>Open your CS2 inventory on Steam, click the saved bookmark, then browse the inventory pages you want to capture. CSFloat can provide missing wear values if it is already enabled.</li>
+        <li id="capture-instructions">Click <b>Send to CounterS</b> in the capture panel and review the import in the new tab.</li>
       </ol>
       <p>Loaded primary inventory only. Protected items and missing floats are excluded.</p>
       <div class="actions">
         <button id="copy-bookmark" class="secondary" disabled>Copy bookmark address</button>
         <button id="exporter-code" class="secondary">Show bookmark address</button>
       </div>
-      <p>If dragging does not work, copy the address, create a bookmark named <b>Export to CounterS</b> in your browser's bookmarks manager, and paste it into the bookmark's <b>URL</b> field—not the browser address bar.</p>
+      <p>If dragging is unavailable, copy the address and paste it into a new bookmark’s <b>URL</b> field.</p>
       <textarea id="exporter-code-text" hidden readonly aria-label="Exporter bookmark URL"></textarea>
       <p id="exporter-status" role="status"></p>
     </details>
     <div class="actions workflow">
-      <label class="secondary file">2. Import inventory<input type="file" id="import" accept="application/json,.json"></label>
-      <button id="refresh-prices" class="secondary">3. Refresh Steam prices</button>
+      <button id="refresh-prices" class="secondary">Refresh Steam prices</button>
       <label class="float-rule">Float rule
         <select id="float-rule"><option value="normalized">Normalized</option><option value="legacy">Raw average (legacy)</option></select>
       </label>
-      <button id="analyze" class="primary">4. Calculate ROI</button>
+      <button id="analyze" class="primary">Calculate ROI</button>
     </div>
     <div class="actions secondary-actions">
+      <label class="secondary file">Import inventory file<input type="file" id="import" accept="application/json,.json"></label>
       <button id="export" class="secondary">Export inventory</button>
-      <button id="demo" class="secondary">Load demo</button>
       <button id="clear" class="secondary">Clear inventory</button>
     </div>
-    <details class="setup optional-input">
-      <summary>Fetch public inventory without floats</summary>
-      <div class="actions">
-        <input id="steam-id" placeholder="17-digit SteamID64" aria-label="SteamID64">
-        <button id="connect" class="secondary">Download Steam inventory</button>
-      </div>
+    <details id="steam-id-setup" class="setup optional-input">
+      <summary>Load public inventory by SteamID</summary>
+      <form id="steam-id-form" class="actions">
+        <input id="steam-id" placeholder="17-digit SteamID64" aria-label="SteamID64" inputmode="numeric" pattern="[0-9]{17}" required>
+        <button id="connect" class="secondary">Load Steam inventory</button>
+      </form>
     </details>
     <div id="notice" class="notice" role="status" hidden></div>
     <div class="input-summary">
-      <span>Items <strong id="count">0</strong></span>
+      <span>Weapon skins <strong id="count">0</strong></span>
       <span id="eligible">0 floats · 0 priced</span>
       <span>Input value <strong id="value">—</strong></span>
       <input id="filter" type="search" placeholder="Search inputs" aria-label="Search inputs">

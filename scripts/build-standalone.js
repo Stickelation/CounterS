@@ -5,7 +5,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 const read=path=>readFile(root+path,'utf8');
 const [template,css,app,exporter,catalog,...modules]=await Promise.all([
  'public/index.template.html','public/style.css','public/app.js','public/steam-export.js','data/catalog.json',
- 'lib/tradeup.js','lib/inventory-import.js','lib/demo.js','lib/standalone-api.js'
+ 'lib/tradeup.js','lib/inventory-import.js','lib/standalone-api.js'
 ].map(read));
 // These small shared modules have no dependencies outside this explicit list.
 // Keep their scope separate from app.js, which defines its own display helpers.

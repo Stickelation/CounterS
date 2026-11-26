@@ -1,4 +1,12 @@
 node_modules/
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+credentials.json
+secrets.json
 *.log
 coverage/

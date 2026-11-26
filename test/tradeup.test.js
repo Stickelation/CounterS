@@ -34,7 +34,24 @@ test('imports reject duplicate assets, invalid floats, and malformed quotes',()=
 test('wear boundaries use the correct market name bands',()=>{
  assert.deepEqual([0,.07,.15,.38,.45,1].map(wear),['Factory New','Minimal Wear','Field-Tested','Well-Worn','Battle-Scarred','Battle-Scarred']);
 });
-test('large searches disclose the cap rather than claiming an optimum',()=>{
+test('a group over the previous limit can be searched exhaustively',()=>{
  const pool=Array.from({length:21},(_,n)=>({...items[0],assetId:String(n)}));
- const r=analyze(pool,catalog,quotes);assert.equal(r.checked,100000);assert.equal(r.truncated,true);assert.equal(r.best.length,10);
+ const r=analyze(pool,catalog,quotes);
+ assert.equal(r.checked,352716);
+ assert.equal(r.truncated,false);
+ assert.equal(r.best.length,10);
+});
+test('a million-contract search samples late assets and covers smaller eligible groups',()=>{
+ const large=Array.from({length:200},(_,n)=>({...items[0],assetId:String(n),float:n===199?.2:.1}));
+ const small=items.map((item,n)=>({...item,skinId:'a',assetId:`stat-${n}`,stattrak:true}));
+ const allQuotes={...quotes,'a (Field-Tested)':quote(.25),'StatTrak™ a (Minimal Wear)':quote(1),
+  'StatTrak™ a1 (Minimal Wear)':quote(100),'StatTrak™ a2 (Minimal Wear)':quote(100)};
+ const r=analyze([...large,...small],catalog,allQuotes);
+ assert.equal(r.checked,1_000_000);
+ assert.equal(r.truncated,true);
+ assert.equal(r.incomplete,0);
+ assert.equal(r.best.length,10);
+ assert.ok(r.best[0].inputs.every(item=>item.stattrak));
+ assert.ok(r.best[1].inputs.some(item=>item.assetId==='199'));
+ assert.equal(new Set(r.best.map(c=>c.inputs.map(i=>i.assetId).join(','))).size,10);
 });
